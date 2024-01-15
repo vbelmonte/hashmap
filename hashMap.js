@@ -16,7 +16,7 @@ function hashMap() {
   function stringToNumber(string) {
     let number = 0;
     const primeNumber = 31;
-    for (let i = 0; i < string.length; i++) {
+    for (let i = 0; i < string.length; i += 1) {
       number = primeNumber * number + string.charCodeAt(i);
     }
 
