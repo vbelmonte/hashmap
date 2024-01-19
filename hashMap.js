@@ -29,6 +29,14 @@ function hashMap() {
     return index;
   }
 
+  function fetchIndexFromEntriesArray(key) {
+    for (let i = 0; i < entriesArray.length; i += 1) {
+      if (entriesArray[i].key === key) {
+        return entriesArray[i].index;
+      }
+    }
+  }
+
   function checkCapacity() {
     let currentLoadfactor = numberOfEntries/capacity;
 
@@ -202,7 +210,7 @@ function hashMap() {
   }
   
   function remove(key) {
-    const index = hash(key);
+    let index = fetchIndexFromEntriesArray(key);
 
     if (index < 0 || index >= buckets.length) {
       throw new Error("Trying to access index out of bound");
@@ -212,26 +220,32 @@ function hashMap() {
   
     if (linkedList === undefined) {
       return false;
-    } else {
-      const listIndex = linkedList.getIndex(key);
-  
-      if (listIndex === null) {
-        return false;
-      } else {
-        let node = linkedList.removeAt(listIndex);
-        removeFromKeysArray(node.key);
-        removeFromValuesArray(node.value);
-        removeFromEntriesArray(node);
-        decreaseEntries();
-        return true;
-      }
     }
+    
+    const listIndex = linkedList.getIndex(key);
+  
+    if (listIndex === null) {
+      return false;
+    }
+
+    let node = linkedList.removeAt(listIndex);
+
+    if (linkedList.size() === 0) {
+      delete buckets[index];
+    }
+
+    removeFromKeysArray(node.key);
+    removeFromValuesArray(node.value);
+    removeFromEntriesArray(node);
+    decreaseEntries();
+    return true;
   }
   
   function clear() {
     for (let i = 0; i < capacity; i += 1) {
       delete buckets[i];
     }
+
     capacity = 16;
     numberOfEntries = 0;
     buckets.length = capacity;
