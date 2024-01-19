@@ -38,12 +38,13 @@ export function hashMap() {
     }
   }
 
-  function checkCapacity() {
+  function overCapacity() {
     let currentLoadfactor = numberOfEntries/capacity;
 
     if (currentLoadfactor >= loadFactor) {
-      increaseCapacity();
-      increaseBuckets();
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -144,7 +145,10 @@ export function hashMap() {
       addToKeysArray(key);
       addToValuesArray(value);
       addToEntriesArray(nodeItem);
-      checkCapacity();
+      if (overCapacity()) {
+        increaseCapacity();
+        increaseBuckets();
+      }
     } else {
       const linkedList = buckets[index];
       let node = linkedList.find(key);
@@ -158,7 +162,10 @@ export function hashMap() {
         addToKeysArray(key);
         addToValuesArray(value);
         addToEntriesArray(nodeItem);
-        checkCapacity();
+        if (overCapacity()) {
+          increaseCapacity();
+          increaseBuckets();
+        }
       } else {
         let oldValue = node.value;
         
