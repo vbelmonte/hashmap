@@ -1,6 +1,7 @@
-import { LinkedList } from "./LinkedList";
+import { LinkedList } from "./LinkedList.js";
+import { Node } from "./Node.js";
 
-function hashMap() {
+export function hashMap() {
 
   let capacity = 16;
   const loadFactor = 0.75;
@@ -266,5 +267,5 @@ function hashMap() {
     return entriesArray;
   }
 
-  return { hash, set, get, has, remove, length, clear, keys, values, entries };
+  return { buckets, hash, set, get, has, remove, length, clear, keys, values, entries };
 }
