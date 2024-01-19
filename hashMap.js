@@ -34,11 +34,16 @@ function hashMap() {
 
     if (currentLoadfactor >= loadFactor) {
       increaseCapacity();
+      increaseBuckets();
     }
   }
 
   function increaseCapacity() {
     capacity = capacity * 2;
+  }
+
+  function increaseBuckets() {
+    buckets.length = buckets.length * 2;
   }
 
   function increaseEntries() {
