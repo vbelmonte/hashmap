@@ -44,8 +44,8 @@ export class LinkedList {
     return size;
   }
 
-  append(key, value) {
-    let node = new Node(key, value, null);
+  append(key, value, index) {
+    let node = new Node(key, value, index, null);
 
     if (this.size() === 0) {
       this.head = node;
@@ -58,8 +58,8 @@ export class LinkedList {
     this.tail = node;
   }
 
-  prepend(key, value) {
-    let node = new Node(key, value, null);
+  prepend(key, value, index) {
+    let node = new Node(key, value, index, null);
 
     if (this.size() === 0) {
       this.head = node;
