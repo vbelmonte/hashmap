@@ -7,9 +7,9 @@ function hashMap() {
   let buckets = new Array(capacity);
   let numberOfEntries = 0;
 
-  let keys = [];
-  let values = [];
-  let entries = [];
+  let keysArray = [];
+  let valuesArray = [];
+  let entriesArray = [];
 
 
 
@@ -43,6 +43,10 @@ function hashMap() {
     numberOfEntries -= 1;
   }
 
+  function addToKeysArray(key) {
+    keysArray.push(key);
+  }
+
   function addToValuesArray(value) {
     values.push(value);
   }
@@ -68,6 +72,29 @@ function hashMap() {
         return;
       }
     }
+  }
+
+  function updateValuesArray(oldValue, newValue) {
+    for (let i = 0; valuesArray.length; i += 1) {
+      if (valuesArray[i] === oldValue) {
+        valuesArray[i] = newValue;
+        break;
+      }
+    }
+  }
+
+  function updateEntriesArray(key, newValue) {
+    for (let i = 0; entriesArray.length; i += 1) {
+      if (entriesArray[i].key === key) {
+        entriesArray[i].value = newValue;
+        break;
+      }
+    }
+  }
+
+  function updateValue(key, oldValue, newValue) {
+    updateValuesArray(oldValue, newValue);
+    updateEntriesArray(key, newValue);
   }
 
 
