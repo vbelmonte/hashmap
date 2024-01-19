@@ -23,6 +23,12 @@ function hashMap() {
     return number;
   }
 
+  function modIndex(value) {
+    const index = value % capacity;
+
+    return index;
+  }
+
   function checkCapacity() {
     let currentLoadfactor = numberOfEntries/capacity;
 
@@ -100,10 +106,7 @@ function hashMap() {
 
   
   function hash(key) {
-    let number = stringToNumber(key);
-    const hashCode = number % capacity;
-
-    return hashCode;
+    return stringToNumber(key);
   }
 
   function length() {
