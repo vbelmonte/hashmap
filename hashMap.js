@@ -48,27 +48,27 @@ function hashMap() {
   }
 
   function addToValuesArray(value) {
-    values.push(value);
+    valuesArray.push(value);
   }
 
   function addToEntriesArray(entry) {
-    entries.push(entry);
+    entriesArray.push(entry);
   }
 
   function removeFromKeysArray(key) {
-    let index = keys.indexOf(key);
-    keys.splice(index, 1);
+    let index = keysArray.indexOf(key);
+    keysArray.splice(index, 1);
   }
 
   function removeFromValuesArray(value) {
-    let index = values.indexOf(value);
-    values.splice(index, 1);
+    let index = valuesArray.indexOf(value);
+    valuesArray.splice(index, 1);
   }
 
   function removeFromEntriesArray(entry) {
-    for (let i = 0; i < entries.length; i += 1) {
-      if (entries[i].key === entry.key && entries[i].value === entry.value) {
-        entries.splice(i, 1);
+    for (let i = 0; i < entriesArray.length; i += 1) {
+      if (entriesArray[i].key === entry.key && entriesArray[i].value === entry.value) {
+        entriesArray.splice(i, 1);
         return;
       }
     }
@@ -222,21 +222,21 @@ function hashMap() {
     capacity = 16;
     numberOfEntries = 0;
     buckets.length = capacity;
-    keys = [];
-    values = [];
-    entries = [];
+    keysArray = [];
+    valuesArray = [];
+    entriesArray = [];
   }
   
   function keys() {
-    return keys;
+    return keysArray;
   }
   
   function values() {
-    return values;
+    return valuesArray;
   }
   
   function entries() {
-    return entries;
+    return entriesArray;
   }
 
   return { hash, set, get, has, remove, length, clear, keys, values, entries };
