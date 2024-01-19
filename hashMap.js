@@ -114,14 +114,16 @@ function hashMap() {
   }
 
   function set(key, value) {
-    const index = hash(key);
+    const hashCode = hash(key);
+    const index = modIndex(hashCode);
     
     if (index < 0 || index >= buckets.length) {
       throw new Error("Trying to access index out of bound");
     }
     
     if (buckets[index] === undefined) {
-      let nodeItem = new Node(key, value);
+      let nodeItem = new Node(key, value, index, null);
+
       buckets[index] = new LinkedList(nodeItem, nodeItem);
 
       increaseEntries();
@@ -134,9 +136,9 @@ function hashMap() {
       let node = linkedList.find(key);
 
       if (node === null) {
-        linkedList.append(key, value);
+        linkedList.append(key, value, index);
 
-        let nodeItem = new Node(key, value);
+        let nodeItem = new Node(key, value, index, null);
 
         increaseEntries();
         addToKeysArray(key);
@@ -144,13 +146,16 @@ function hashMap() {
         addToEntriesArray(nodeItem);
         checkCapacity();
       } else {
+        let oldValue = node.value;
+        
         node.value = value;
+        updateValue(key, oldValue, value);
       }
     }
   }
 
   function get(key) {
-    const index = hash(key);
+    const index = modIndex(hash(key));
 
     if (index < 0 || index >= buckets.length) {
       throw new Error("Trying to access index out of bound");
@@ -172,7 +177,7 @@ function hashMap() {
   }
 
   function has(key) {
-    const index = hash(key);
+    const index = modIndex(hash(key));
 
     if (index < 0 || index >= buckets.length) {
       throw new Error("Trying to access index out of bound");
