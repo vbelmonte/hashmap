@@ -52,17 +52,6 @@ export function hashMap() {
     numberOfEntries -= 1;
   }
 
-  function clearEntriesFromBucket() {
-    let entries = [];
-    for (let i = 0; i < buckets.length; i += 1) {
-      while (buckets[i].size > 0) {
-        entries.push(buckets[i].pop());
-      }
-    }
-    
-    return entries;
-  }
-
 
   
   function hash(key) {
@@ -254,11 +243,6 @@ export function hashMap() {
     capacity = 16;
     numberOfEntries = 0;
     buckets.length = capacity;
-    //buckets = new Array(capacity);
-    /*keysArray = [];
-    valuesArray = [];
-    entriesArray = [];*/
-    //console.log(buckets);
   }
   
   function keys() {
