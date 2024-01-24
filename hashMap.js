@@ -279,5 +279,5 @@ export function hashMap() {
     return values;
   }
 
-  return { buckets, hash, set, get, has, remove, length, clear, keys, values, entries };
+  return { hash, set, get, has, remove, length, clear, keys, values, entries };
 }
