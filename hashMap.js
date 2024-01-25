@@ -103,13 +103,13 @@ export function hashMap() {
         }
 
         if (buckets[index] === undefined) {
-          let nodeItem = new Node(key, value, index, null);
+          let nodeItem = new Node(key, value, null);
           
           buckets[index] = new LinkedList(nodeItem, nodeItem);
 
         } else {
           const linkedList = buckets[index];
-          linkedList.append(key, value, index);
+          linkedList.append(key, value);
         }
       }
   }
@@ -123,7 +123,7 @@ export function hashMap() {
     }
     
     if (buckets[index] === undefined) {
-      let nodeItem = new Node(key, value, index, null);
+      let nodeItem = new Node(key, value, null);
 
       buckets[index] = new LinkedList(nodeItem, nodeItem);
 
@@ -134,7 +134,7 @@ export function hashMap() {
       let node = linkedList.find(key);
 
       if (node === null) {
-        linkedList.append(key, value, index);
+        linkedList.append(key, value);
         increaseEntries();
 
       } else {
