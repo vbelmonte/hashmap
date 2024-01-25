@@ -1,5 +1,6 @@
 export class Node {
   
+  key = null;
   value = null;
   nextNode = null;
 

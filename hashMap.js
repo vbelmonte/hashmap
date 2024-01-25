@@ -1,38 +1,47 @@
-import { LinkedList } from "./LinkedList";
+import { LinkedList } from "./LinkedList.js";
+import { Node } from "./Node.js";
 
-function hashMap() {
+export function hashMap() {
 
   let capacity = 16;
   const loadFactor = 0.75;
   let buckets = new Array(capacity);
   let numberOfEntries = 0;
 
-  let keys = [];
-  let values = [];
-  let entries = [];
-
 
 
   function stringToNumber(string) {
     let number = 0;
     const primeNumber = 31;
-    for (let i = 0; i < string.length; i++) {
+    for (let i = 0; i < string.length; i += 1) {
       number = primeNumber * number + string.charCodeAt(i);
     }
 
     return number;
   }
 
-  function checkCapacity() {
+  function modIndex(value) {
+    const index = value % capacity;
+
+    return index;
+  }
+
+  function overCapacity() {
     let currentLoadfactor = numberOfEntries/capacity;
 
     if (currentLoadfactor >= loadFactor) {
-      increaseCapacity();
+      return true;
+    } else {
+      return false;
     }
   }
 
   function increaseCapacity() {
     capacity = capacity * 2;
+  }
+
+  function increaseBuckets() {
+    buckets.length = buckets.length * 2;
   }
 
   function increaseEntries() {
@@ -43,173 +52,231 @@ function hashMap() {
     numberOfEntries -= 1;
   }
 
-  function addToValuesArray(value) {
-    values.push(value);
-  }
-
-  function addToEntriesArray(entry) {
-    entries.push(entry);
-  }
-
-  function removeFromKeysArray(key) {
-    let index = keys.indexOf(key);
-    keys.splice(index, 1);
-  }
-
-  function removeFromValuesArray(value) {
-    let index = values.indexOf(value);
-    values.splice(index, 1);
-  }
-
-  function removeFromEntriesArray(entry) {
-    for (let i = 0; i < entries.length; i += 1) {
-      if (entries[i].key === entry.key && entries[i].value === entry.value) {
-        entries.splice(i, 1);
-        return;
-      }
-    }
-  }
-
 
   
   function hash(key) {
-    let number = stringToNumber(key);
-    const hashCode = number % capacity;
-
-    return hashCode;
+    return stringToNumber(key);
   }
 
   function length() {
     return numberOfEntries;
   }
 
+  function entries() {
+    let entries = [];
+
+    for (let i = 0; i < buckets.length; i += 1) {
+      if (buckets[i] !== undefined) {
+        let node = buckets[i].head;
+
+        while (node !== null) {
+          entries.push({key: node.key, value: node.value});
+          node = node.nextNode;
+        }
+      } 
+    }
+
+    return entries;
+  }
+
+  function copyEntriesToExpandedMap() {
+      increaseCapacity();
+      increaseBuckets();
+
+      //copy every entry over to an array
+      let ent = entries();
+
+      //clear buckets
+      for (let i = 0; i < capacity; i += 1) {
+        delete buckets[i];
+      }
+
+      //add entry to the newly expanded hash table
+      for (let i = 0; i < ent.length; i += 1) {
+        const key = ent[i].key;
+        const value = ent[i].value;
+        const hashCode = hash(key);
+        const index = modIndex(hashCode);
+
+        if (index < 0 || index >= buckets.length) {
+          throw new Error("Trying to access index out of bound");
+        }
+
+        if (buckets[index] === undefined) {
+          let nodeItem = new Node(key, value, null);
+          
+          buckets[index] = new LinkedList(nodeItem, nodeItem);
+
+        } else {
+          const linkedList = buckets[index];
+          linkedList.append(key, value);
+        }
+      }
+  }
+
   function set(key, value) {
-    const index = hash(key);
+    const hashCode = hash(key);
+    const index = modIndex(hashCode);
     
     if (index < 0 || index >= buckets.length) {
       throw new Error("Trying to access index out of bound");
     }
     
     if (buckets[index] === undefined) {
-      let nodeItem = new Node(key, value);
+      let nodeItem = new Node(key, value, null);
+
       buckets[index] = new LinkedList(nodeItem, nodeItem);
 
       increaseEntries();
-      addToKeysArray(key);
-      addToValuesArray(value);
-      addToEntriesArray(nodeItem);
-      checkCapacity();
+
     } else {
       const linkedList = buckets[index];
       let node = linkedList.find(key);
 
       if (node === null) {
         linkedList.append(key, value);
-
-        let nodeItem = new Node(key, value);
-
         increaseEntries();
-        addToKeysArray(key);
-        addToValuesArray(value);
-        addToEntriesArray(nodeItem);
-        checkCapacity();
+
       } else {
         node.value = value;
       }
     }
+
+    if (overCapacity()) {
+      copyEntriesToExpandedMap();
+    }
   }
 
   function get(key) {
-    const index = hash(key);
+    let search = capacity;
+    let index;
 
-    if (index < 0 || index >= buckets.length) {
-      throw new Error("Trying to access index out of bound");
-    }
+    while (search >= 1) {
+      index = hash(key) % search;
 
-    const linkedList = buckets[index];
-    
-    if (linkedList === undefined) {
-      return null;
-    } else {
-      const node = linkedList.find(key);
-
-      if (node === null) {
-        return null;
-      } else {
-        return node.value;
+      if (index < 0 || index >= buckets.length) {
+        throw new Error("Trying to access index out of bound");
       }
+  
+      const linkedList = buckets[index];
+      
+      if (linkedList !== undefined) {
+        const node = linkedList.find(key);
+  
+        if (node !== null) {
+          return node.value;
+        }
+      }
+
+      search = search / 2;
     }
+
+    return null;
   }
 
   function has(key) {
-    const index = hash(key);
+    let search = capacity;
+    let index;
 
-    if (index < 0 || index >= buckets.length) {
-      throw new Error("Trying to access index out of bound");
-    }
+    while (search >= 1) {
+      index = hash(key) % search;
 
-    const linkedList = buckets[index];
-  
-    if (linkedList === undefined) {
-      return false;
-    } else {
-      if (linkedList.contains(key)) {
-        return true;
-      } else {
-        return false;
+      if (index < 0 || index >= buckets.length) {
+        throw new Error("Trying to access index out of bound");
       }
+  
+      const linkedList = buckets[index];
+      
+      if (linkedList !== undefined) {
+        const result = linkedList.contains(key);
+  
+        if (result) {
+          return true;
+        }
+      }
+
+      search = search / 2;
     }
+
+    return false;
   }
   
   function remove(key) {
-    const index = hash(key);
+    let search = capacity;
+    let index;
 
-    if (index < 0 || index >= buckets.length) {
-      throw new Error("Trying to access index out of bound");
-    }
+    while (search >= 1) {
+      index = hash(key) % search;
 
-    const linkedList = buckets[index];
-  
-    if (linkedList === undefined) {
-      return false;
-    } else {
-      const listIndex = linkedList.getIndex(key);
-  
-      if (listIndex === null) {
-        return false;
-      } else {
-        let node = linkedList.removeAt(listIndex);
-        removeFromKeysArray(node.key);
-        removeFromValuesArray(node.value);
-        removeFromEntriesArray(node);
-        decreaseEntries();
-        return true;
+      if (index < 0 || index >= buckets.length) {
+        throw new Error("Trying to access index out of bound");
       }
+  
+      const linkedList = buckets[index];
+      
+      if (linkedList !== undefined) {
+        const nodeIndex = linkedList.getIndex(key);
+  
+        if (nodeIndex !== null) {
+          linkedList.removeAt(nodeIndex);
+
+          if (linkedList.size() === 0) {
+            delete buckets[index];
+          }
+          decreaseEntries();
+
+          return true;
+        }
+      }
+
+      search = search / 2;
     }
+
+    return false;
   }
   
   function clear() {
     for (let i = 0; i < capacity; i += 1) {
       delete buckets[i];
     }
+
     capacity = 16;
     numberOfEntries = 0;
     buckets.length = capacity;
-    keys = [];
-    values = [];
-    entries = [];
   }
   
   function keys() {
+    let keys = [];
+
+    for (let i = 0; i < buckets.length; i += 1) {
+      if (buckets[i] !== undefined) {
+        let node = buckets[i].head;
+
+        while (node !== null) {
+          keys.push(node.key);
+          node = node.nextNode;
+        }
+      } 
+    }
+
     return keys;
   }
   
   function values() {
+    let values = [];
+
+    for (let i = 0; i < buckets.length; i += 1) {
+      if (buckets[i] !== undefined) {
+        let node = buckets[i].head;
+
+        while (node !== null) {
+          values.push(node.value);
+          node = node.nextNode;
+        }
+      } 
+    }
+
     return values;
-  }
-  
-  function entries() {
-    return entries;
   }
 
   return { hash, set, get, has, remove, length, clear, keys, values, entries };

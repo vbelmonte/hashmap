@@ -104,10 +104,23 @@ export class LinkedList {
       throw new Error('Cannot remove last element. LinkedList is size 0.');
     }
 
-    const newTail = this.at(this.size() - 2);
+    if (this.size() === 1) {
+      let oldTail = this.tail;
+      this.head = null;
+      this.tail = null;
 
-    newTail.nextNode = null;
-    this.tail = newTail;
+      return oldTail;
+    }
+
+    if (this.size() > 1) {
+      const newTail = this.at(this.size() - 2);
+      let oldTail = this.tail;
+
+      newTail.nextNode = null;
+      this.tail = newTail;
+
+      return oldTail;
+    }
   }
 
   contains(key) {
